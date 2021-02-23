@@ -9,7 +9,7 @@ class TreeNode:
 
     """This class implements the nodes of the tree"""
 
-    def __init__(self, data : any) -> None:
+    def __init__(self, data : any, character=None) -> None:
 
         """Constructor of our TreeNode class
 
@@ -19,7 +19,7 @@ class TreeNode:
         self.right_child = None
         self.left_child = None
         self.data = data
-        self.character = ''
+        self.character = character
 
     def __str__(self) -> str:
 
@@ -32,9 +32,9 @@ class TreeNode:
             return str(self.data)
 
         return "(%s [%s]: %s [%s]) : %s" % (str(self.left_child),
-                                   self.character,
+                                   self.left_child.character,
                                    str(self.right_child),
-                                   self.character,
+                                   self.right_child.character,
                                    str(self.data))
 
     
@@ -78,33 +78,7 @@ class Tree:
                 queue.append(node.right_child)
             
             elif node.left_child is None and node.right_child is None:
-                try:
-                    if frequency['A'] == node.data:
-                        node.character += 'A'
-                        frequency.pop('A')
-
-                    elif frequency['C'] == node.data:
-                        node.character += 'C'
-                        frequency.pop('C')
-
-                    elif frequency['G'] == node.data:
-                        node.character += 'G'
-                        frequency.pop('G')
-                    
-                    elif frequency['T'] == node.data:
-                        node.character += 'T'
-                        frequency.pop('T')
-                    
-                    elif frequency['N'] == node.data:
-                        node.character += 'N'
-                        frequency.pop('N')
-                    
-                    elif frequency['$'] == node.data:
-                        node.character = '$'
-                        frequency.pop('$')
-                except KeyError:
-                    pass
-
+                leafs.append(node)
         return leafs
         
         
