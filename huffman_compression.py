@@ -1,8 +1,6 @@
 # coding ~utf-8
 """
-
 Author: Louai KB
-
 """
 from tree_huffman import TreeNode
 from tree_huffman import Tree
@@ -14,7 +12,6 @@ class HuffmanCompression:
     def __init__(self, sequence : str) -> None:
 
         """Constructor of our class
-
         Args:
             sequence (str): the sequence to be compressed
         """
@@ -25,10 +22,8 @@ class HuffmanCompression:
 
         """ this static method allows to compute the frequency of each
             character in the sequence
-
         Args:
             sequence (str): the sequence to be compressed
-
         Returns:
             dict: the output will be a dictionnary, keys represent the character
             and the values represent the frequence.
@@ -93,9 +88,8 @@ class HuffmanCompression:
         list_of_nodes = []
 
         for key in characters_frequency:
-            node = TreeNode(characters_frequency[key])
+            node = TreeNode(characters_frequency[key], key)
             list_of_nodes.append(node)
-
 
         root = list_of_nodes[0]
         tree_object = Tree(root)
@@ -112,13 +106,13 @@ class HuffmanCompression:
 
 
                                                                                                                   
-# n1 = TreeNode(1)
-# n2 = TreeNode(0)
-# n3 = TreeNode(3)
-# n4 = TreeNode(1)
-# n5 = TreeNode(0)
-# sequence = 'N N T N A  C TT N G  N N G  T T N C C TA $ T A  C C T'
+n1 = TreeNode(1)
+n2 = TreeNode(0)
+n3 = TreeNode(3)
+n4 = TreeNode(1)
+n5 = TreeNode(0)
+sequence = 'N N T N A  C T T N G  N N G  T T N C C T A  T A  C C T'
 
 
-# obj = HuffmanCompression(sequence.replace(' ', ''))
-# print(obj.binary_tree_huffman())
+obj = HuffmanCompression(sequence.replace(' ', ''))
+print(obj.binary_tree_huffman())
