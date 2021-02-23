@@ -38,7 +38,8 @@ class HuffmanCompression:
                                     ('C', 0),
                                     ('G', 0),
                                     ('T', 0),
-                                    ('N', 0)])
+                                    ('N', 0),
+                                    ('$', 0)])
         for charcater in sequence:
 
             if charcater == 'A':
@@ -55,11 +56,20 @@ class HuffmanCompression:
 
             elif charcater == 'N':
                 characters_frequency['N'] += 1
+            
+            elif charcater == '$':
+                characters_frequency['$'] += 1
+
+        # copy() to avoid runtime error
+        for key in characters_frequency.copy():
+            if characters_frequency[key] == 0:
+                characters_frequency.pop(key)
 
         return characters_frequency
 
     @staticmethod
     def two_minimum_nodes(list_of_nodes):
+
         minimum_node_one = list_of_nodes[0]
 
         for i in range(1, len(list_of_nodes), 1):
@@ -80,24 +90,26 @@ class HuffmanCompression:
 
     def binary_tree_huffman(self):
         characters_frequency = HuffmanCompression.frequency_calculator(self.sequence_to_compress)
-        frequencies = characters_frequency.values()
         list_of_nodes = []
 
-        for frequency in frequencies:
-            node = TreeNode(frequency)
+        for key in characters_frequency:
+            node = TreeNode(characters_frequency[key])
             list_of_nodes.append(node)
+
 
         root = list_of_nodes[0]
         tree_object = Tree(root)
 
-        while tree_object.number_of_leafs(root) != 5:
+        while tree_object.number_of_leafs(root) != len(characters_frequency):
             lowest_nodes = HuffmanCompression.two_minimum_nodes(list_of_nodes)
             root = TreeNode(lowest_nodes[0].data + lowest_nodes[1].data)
             list_of_nodes.append(root)
             root.left_child = lowest_nodes[1]
             root.right_child = lowest_nodes[0]
             tree_object.node = root
-        print(root)
+
+        return root
+
 
                                                                                                                   
 # n1 = TreeNode(1)
@@ -105,8 +117,8 @@ class HuffmanCompression:
 # n3 = TreeNode(3)
 # n4 = TreeNode(1)
 # n5 = TreeNode(0)
-# sequence = 'AGGGT'
-# #print(HuffmanCompression.two_minimum_nodes([n1, n2,n3,n4,n5]))
+# sequence = 'N N T N A  C TT N G  N N G  T T N C C TA $ T A  C C T'
+
 
 # obj = HuffmanCompression(sequence.replace(' ', ''))
-# obj.binary_tree_huffman()
+# print(obj.binary_tree_huffman())
