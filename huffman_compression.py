@@ -63,12 +63,23 @@ class HuffmanCompression:
         return characters_frequency
 
     @staticmethod
-    def two_minimum_nodes(list_of_nodes):
+    def two_minimum_nodes(list_of_nodes : list) -> tuple:
+
+        """ this static method determines the tow minimum nodes
+            it searches for the first minimum, then it delets it
+            from the list in order to find the second minimum.
+
+        Args:
+            list_of_nodes (list): list of nodes (TreeNode) objects.
+
+        Returns:
+            tuple: the first and the second minimums in a tuple
+        """
 
         minimum_node_one = list_of_nodes[0]
 
         for i in range(1, len(list_of_nodes), 1):
-            if minimum_node_one.data > list_of_nodes[i].data:
+            if minimum_node_one.data >= list_of_nodes[i].data:
                 minimum_node_one = list_of_nodes[i]
 
         list_of_nodes.remove(minimum_node_one)
@@ -76,14 +87,19 @@ class HuffmanCompression:
         minimum_node_two = list_of_nodes[0]
 
         for i in range(1, len(list_of_nodes), 1):
-            if minimum_node_two.data > list_of_nodes[i].data:
+            if minimum_node_two.data >= list_of_nodes[i].data:
                 minimum_node_two = list_of_nodes[i]
 
         list_of_nodes.remove(minimum_node_two)
 
         return (minimum_node_one, minimum_node_two)
 
-    def binary_tree_huffman(self):
+    def binary_tree_huffman(self) -> Tree:
+        """ this method constructs the binary tree
+
+        Returns:
+            Tree: the binary tree
+        """
         characters_frequency = HuffmanCompression.frequency_calculator(self.sequence_to_compress)
         list_of_nodes = []
 
@@ -101,7 +117,7 @@ class HuffmanCompression:
             root.left_child = lowest_nodes[1]
             root.right_child = lowest_nodes[0]
             tree_object.node = root
-
+        print(Tree.leaf_checker(root))
         return root
 
 
