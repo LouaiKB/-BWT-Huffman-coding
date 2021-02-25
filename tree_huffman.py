@@ -37,6 +37,8 @@ class TreeNode:
                                    self.right_child.character,
                                    str(self.data))
 
+    def is_leaf(self):
+        return self.left_child is None and self.right_child is None    
     
 class Tree:
 
@@ -50,6 +52,7 @@ class Tree:
             node (TreeNode): the root node of the tree
         """
         self.node = node
+        self.encoder = {}
     
     def number_of_leafs(self, node : TreeNode) -> int:
 
@@ -61,25 +64,74 @@ class Tree:
         
         return self.number_of_leafs(node.left_child) + self.number_of_leafs(node.right_child)
 
-    @staticmethod
-    def leaf_checker(root, frequency):
-        if root is None:
-            raise Exception('Node is empty')
 
-        queue = [root]
-        leafs = []
 
-        while len(queue) > 0:
-            node = queue.pop(0)
-            if node.left_child is not None:
-                queue.append(node.left_child)
 
-            if node.right_child is not None:
-                queue.append(node.right_child)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        # if root is None:
+        #     raise Exception('Node is empty')
+
+        # queue = [root]
+        # encoder = {}
+        # binary_code = ''
+        # father_node = root
+        # grand_father_node = root
+
+        # while len(queue) > 0:
+        #     if len(queue) == 1:
+        #         father_node = grand_father_node
+        #         binary_code = binary_code[:-1]
+
+        #     node = queue.pop()
+        #     if node == father_node.left_child:
+        #         binary_code += '1'
+
+        #     elif node == father_node.right_child:
+        #         binary_code += '0'
+
+        #     if node.right_child is not None:
+        #         queue.append(node.right_child)
+
+
+        #     if node.left_child is not None:
+        #         queue.append(node.left_child)
             
-            elif node.left_child is None and node.right_child is None:
-                leafs.append(node)
-        return leafs
+        #     elif node.is_leaf():
+        #         encoder[node.character] = binary_code
+        #         binary_code = binary_code[:-1]
+
+        #     if not node.is_leaf():
+        #         grand_father_node = father_node
+        #         father_node = node
+
+        # return encoder
         
         
         
