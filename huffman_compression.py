@@ -17,6 +17,7 @@ class HuffmanCompression:
         """
         self.sequence_to_compress = sequence
         self.encoder = {}
+        self.sequence_to_binary = ''
 
     @staticmethod
     def frequency_calculator(sequence : str) -> dict:
@@ -77,6 +78,7 @@ class HuffmanCompression:
         return (minimum_node_one, minimum_node_two)
 
     def binary_tree_huffman(self) -> Tree:
+
         """ this method constructs the binary tree
 
         Returns:
@@ -102,20 +104,45 @@ class HuffmanCompression:
 
         return root
 
-    def make_code(self, node, current_code):
+    def make_code(self, node : TreeNode, current_code : str) -> None:
+
+        """ This recursive method creates binary code
+            from traversing the binary tree and put 
+            the binary code for each caracter 
+            in the encoder attribute.
+        Args:
+            node (TreeNode): the TreeNode object
+            current_code (str): current binary code
+        """
 
         if node is None:
             return
+
         if node.character is not None:
             self.encoder[node.character] = current_code
         
         self.make_code(node.left_child, current_code + '1')
         self.make_code(node.right_child, current_code + '0')
 
-    def code_generator(self):
+    def code_generator(self) -> None:
+
+        """ Code generator method, it calls the make_code
+            recursive function to generate binary code.
+        """
         current_code = ''
         root = self.binary_tree_huffman()
         self.make_code(root, current_code)
+
+    def sequence_to_binary_transformation(self) -> None:
+
+        """ This method transform the sequence into binary code
+        """
+        self.code_generator()
+        for character in self.sequence_to_compress:
+            self.sequence_to_binary += self.encoder[character]
+
+
+
 
                                                                                                                   
 n1 = TreeNode(1)
@@ -128,5 +155,5 @@ sequence = 'N N T N A  C T T N G  N N G  T T N C C T A  T A  C C T'
 
 obj = HuffmanCompression(sequence.replace(' ', ''))
 
-obj.code_generator()
-print(obj.encoder)
+obj.sequence_to_binary_transformation()
+print(obj.sequence_to_binary)
