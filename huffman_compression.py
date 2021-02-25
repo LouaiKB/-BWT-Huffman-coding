@@ -16,6 +16,7 @@ class HuffmanCompression:
             sequence (str): the sequence to be compressed
         """
         self.sequence_to_compress = sequence
+        self.encoder = {}
 
     @staticmethod
     def frequency_calculator(sequence : str) -> dict:
@@ -98,9 +99,23 @@ class HuffmanCompression:
             root.left_child = lowest_nodes[1]
             root.right_child = lowest_nodes[0]
             tree_object.node = root
-        print(Tree.leaf_checker(root))
+
         return root
 
+    def make_code(self, node, current_code):
+
+        if node is None:
+            return
+        if node.character is not None:
+            self.encoder[node.character] = current_code
+        
+        self.make_code(node.left_child, current_code + '1')
+        self.make_code(node.right_child, current_code + '0')
+
+    def code_generator(self):
+        current_code = ''
+        root = self.binary_tree_huffman()
+        self.make_code(root, current_code)
 
                                                                                                                   
 n1 = TreeNode(1)
@@ -108,8 +123,10 @@ n2 = TreeNode(0)
 n3 = TreeNode(3)
 n4 = TreeNode(1)
 n5 = TreeNode(0)
-sequence = 'ACTCG'
+sequence = 'N N T N A  C T T N G  N N G  T T N C C T A  T A  C C T'
 
 
 obj = HuffmanCompression(sequence.replace(' ', ''))
-print(obj.binary_tree_huffman())
+
+obj.code_generator()
+print(obj.encoder)
