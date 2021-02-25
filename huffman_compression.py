@@ -28,32 +28,13 @@ class HuffmanCompression:
             dict: the output will be a dictionnary, keys represent the character
             and the values represent the frequence.
         """
-        characters_frequency = dict([
-                                    ('A', 0),
-                                    ('C', 0),
-                                    ('G', 0),
-                                    ('T', 0),
-                                    ('N', 0),
-                                    ('$', 0)])
-        for charcater in sequence:
+        characters_frequency = dict()
 
-            if charcater == 'A':
-                characters_frequency['A'] += 1
+        for character in sequence:
+            if not character in characters_frequency:
+                characters_frequency[character] = 0
 
-            elif charcater == 'C':
-                characters_frequency['C'] += 1
-
-            elif charcater == 'G':
-                characters_frequency['G'] += 1
-
-            elif charcater == 'T':
-                characters_frequency['T'] += 1
-
-            elif charcater == 'N':
-                characters_frequency['N'] += 1
-            
-            elif charcater == '$':
-                characters_frequency['$'] += 1
+            characters_frequency[character] += 1
 
         # copy() to avoid runtime error
         for key in characters_frequency.copy():
@@ -127,7 +108,7 @@ n2 = TreeNode(0)
 n3 = TreeNode(3)
 n4 = TreeNode(1)
 n5 = TreeNode(0)
-sequence = 'N N T N A  C T T N G  N N G  T T N C C T A  T A  C C T'
+sequence = 'ACTCG'
 
 
 obj = HuffmanCompression(sequence.replace(' ', ''))
