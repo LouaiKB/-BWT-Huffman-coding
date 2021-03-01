@@ -9,8 +9,6 @@ class HuffmanCompression:
 
     """This class implements the Huffman compression"""
 
-    encoder = {}
-
     def __init__(self, sequence : str) -> None:
 
         """Constructor of our class
@@ -19,7 +17,7 @@ class HuffmanCompression:
         """
         self.sequence_to_compress = sequence
         self.sequence_to_binary = ''
-        self.sequence_ascii = ''
+        self.ascii_sequence = ''
         
     @staticmethod
     def frequency_calculator(sequence : str) -> dict:
@@ -106,8 +104,8 @@ class HuffmanCompression:
 
         return root
 
-    @classmethod
-    def make_code(cls, node : TreeNode, current_code : str) -> None:
+    @staticmethod
+    def make_code(node : TreeNode, current_code : str, encoder : dict) -> None:
 
         """ This recursive method creates binary code
             from traversing the binary tree and put 
@@ -122,41 +120,49 @@ class HuffmanCompression:
             return
 
         if node.character is not None:
-            cls.encoder[node.character] = current_code
+            encoder[node.character] = current_code
         
-        cls.make_code(node.left_child, current_code + '1')
-        cls.make_code(node.right_child, current_code + '0')
+        HuffmanCompression.make_code(node.left_child, current_code + '1', encoder)
+        HuffmanCompression.make_code(node.right_child, current_code + '0', encoder)
 
-    def code_generator(self) -> None:
+        return encoder
+
+    @staticmethod
+    def code_generator(root) -> dict:
 
         """ Code generator method, it calls the make_code
             recursive function to generate binary code.
         """
         current_code = ''
-        root = self.binary_tree_huffman()
-        self.make_code(root, current_code)
+        binary_code = {}
+        encoder = HuffmanCompression.make_code(root, current_code, binary_code)
+        return encoder
 
     def sequence_to_binary_transformation(self) -> None:
 
         """ This method transform the sequence into binary code
         """
-        self.code_generator()
+        root = self.binary_tree_huffman()
+        encoder = HuffmanCompression.code_generator(root)
         for character in self.sequence_to_compress:
-            self.sequence_to_binary += self.encoder[character]
+            self.sequence_to_binary += encoder[character]
+
+    def binary_to_ascii(self) -> None:
+
+        """[summary]
+        """
+        for i in range(0, len(self.sequence_to_binary), 8):
+            binary_code = self.sequence_to_binary[i:i+8]
+            self.ascii_sequence += chr(int(binary_code, 2))
+        
+        with open('compressed_sequence.txt', 'w', encoding="utf-8") as file:
+            file.write(self.ascii_sequence)
 
 
-
-
-                                                                                                                  
-n1 = TreeNode(1)
-n2 = TreeNode(0)
-n3 = TreeNode(3)
-n4 = TreeNode(1)
-n5 = TreeNode(0)
-sequence = 'N N T N A  C T T N G  N N G  T T N C C T A  T A  C C T'
+sequence = 'ATCGCATCTGATCAGTCGATCTGACNTATGCAGTATGCATGACTGATCTAGATCGAGTAGTNACTATGCNATGCANTCACTG'
 
 
 obj = HuffmanCompression(sequence.replace(' ', ''))
 
 obj.sequence_to_binary_transformation()
-print(obj.sequence_to_binary)
+obj.binary_to_ascii()
