@@ -9,6 +9,8 @@ class HuffmanCompression:
 
     """This class implements the Huffman compression"""
 
+    encoder = {}
+
     def __init__(self, sequence : str) -> None:
 
         """Constructor of our class
@@ -16,9 +18,9 @@ class HuffmanCompression:
             sequence (str): the sequence to be compressed
         """
         self.sequence_to_compress = sequence
-        self.encoder = {}
         self.sequence_to_binary = ''
-
+        self.sequence_ascii = ''
+        
     @staticmethod
     def frequency_calculator(sequence : str) -> dict:
 
@@ -104,7 +106,8 @@ class HuffmanCompression:
 
         return root
 
-    def make_code(self, node : TreeNode, current_code : str) -> None:
+    @classmethod
+    def make_code(cls, node : TreeNode, current_code : str) -> None:
 
         """ This recursive method creates binary code
             from traversing the binary tree and put 
@@ -119,10 +122,10 @@ class HuffmanCompression:
             return
 
         if node.character is not None:
-            self.encoder[node.character] = current_code
+            cls.encoder[node.character] = current_code
         
-        self.make_code(node.left_child, current_code + '1')
-        self.make_code(node.right_child, current_code + '0')
+        cls.make_code(node.left_child, current_code + '1')
+        cls.make_code(node.right_child, current_code + '0')
 
     def code_generator(self) -> None:
 
