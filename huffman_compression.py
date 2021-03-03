@@ -17,7 +17,7 @@ class HuffmanCompression:
         """
         self.sequence_to_compress = sequence
         self.sequence_to_binary = ''
-        self.ascii_sequence = ''
+        self.unicode_sequence = ''
         
     @staticmethod
     def frequency_calculator(sequence : str) -> dict:
@@ -128,11 +128,19 @@ class HuffmanCompression:
         return encoder
 
     @staticmethod
-    def code_generator(root) -> dict:
+    def code_generator(root : TreeNode) -> dict:
 
         """ Code generator method, it calls the make_code
             recursive function to generate binary code.
+
+        Args:
+            root (TreeNode): the huffmain tree
+
+        Returns:
+            dict: an encoder which has characters in the keys and the
+            binary code in the values
         """
+
         current_code = ''
         binary_code = {}
         encoder = HuffmanCompression.make_code(root, current_code, binary_code)
@@ -147,22 +155,74 @@ class HuffmanCompression:
         for character in self.sequence_to_compress:
             self.sequence_to_binary += encoder[character]
 
-    def binary_to_ascii(self) -> None:
+    @staticmethod
+    def padding_binary(binary : str) -> tuple:
 
-        """[summary]
+        """ this static method adds 0 to the end of the binary sequence 
+            in order to make it divisible by 8 and counts the number of added
+            0 in order to delete them after transforming the caracters to binary. 
+
+        Args:
+            binary (str): binary sequence
+
+        Returns:
+            tuple: (binary sequence with added 0 and the number of added 0)
         """
-        for i in range(0, len(self.sequence_to_binary), 8):
-            binary_code = self.sequence_to_binary[i:i+8]
-            self.ascii_sequence += chr(int(binary_code, 2))
-        
-        with open('compressed_sequence.txt', 'w', encoding="utf-8") as file:
-            file.write(self.ascii_sequence)
+        added_zeros = 0
+
+        while len(binary) % 8 != 0:
+            binary += '0'
+            added_zeros += 1
+
+        return (binary, added_zeros)
+
+    def binary_to_unicode(self) -> None:
+
+        """ this method transforms the binary code into unicode characters,
+            after that it will create a compressed sequence file in order to
+            store the unicode characters code in this file.
+            this file contains the compressed sequence
+        """
+        padding_results = HuffmanCompression.padding_binary(self.sequence_to_binary)
+        padded_binary_sequence = padding_results[0]
+
+        for i in range(0, len(padded_binary_sequence), 8):
+            binary_code = padded_binary_sequence[i:i+8]
+            binary_transformation = int(binary_code, 2)
+            self.unicode_sequence += chr(binary_transformation)
+
+        with open('compressed_sequence.txt', 'wb') as file:
+            encode = self.unicode_sequence.encode('utf-8')
+            file.write(encode)
+
+    def unicode_to_binary(self) -> str:
+
+        """ this method transforms the unicode characters into binary,
+            after it deletes the added 0 by calling the padding_binary()
+            static method. 
+            this method implements the first step of decompression.
+        """
+        binary = ""
+
+        for char in self.unicode_sequence:
+            ord_char = ord(char)
+            binary += '{:08b}'.format(ord_char)
+
+        padding_results = HuffmanCompression.padding_binary(self.sequence_to_binary)
+        number_of_added_zeros = padding_results[1]
+        binary = binary[:-number_of_added_zeros]
+
+        return binary
 
 
-sequence = 'ATCGCATCTGATCAGTCGATCTGACNTATGCAGTATGCATGACTGATCTAGATCGAGTAGTNACTATGCNATGCANTCACTG'
 
 
-obj = HuffmanCompression(sequence.replace(' ', ''))
+if __name__ == '__main__':
 
-obj.sequence_to_binary_transformation()
-obj.binary_to_ascii()
+    sequence = 'ACTGC'
+
+    obj = HuffmanCompression(sequence.replace(' ', ''))
+    obj.sequence_to_binary_transformation()
+    print(obj.sequence_to_binary)
+    obj.binary_to_unicode()
+    print(obj.unicode_to_binary())
