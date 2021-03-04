@@ -4,6 +4,8 @@ Author: Louai KB
 """
 from tree_huffman import TreeNode
 from tree_huffman import Tree
+from Bio import SeqIO
+from bwt import Bwt
 
 class HuffmanCompression:
 
@@ -36,7 +38,7 @@ class HuffmanCompression:
             if not character in characters_frequency:
                 characters_frequency[character] = 0
 
-            characters_frequency[character] += 1
+            characters_frequency[character] = characters_frequency[character] + 1
 
         # copy() to avoid runtime error
         for key in characters_frequency.copy():
@@ -109,8 +111,8 @@ class HuffmanCompression:
 
         """ This recursive method creates binary code
             from traversing the binary tree and put 
-            the binary code for each caracter 
-            in the encoder attribute.
+            the binary code as a value for each caracter as a key
+            in the encoder dictionnary.
         Args:
             node (TreeNode): the TreeNode object
             current_code (str): current binary code
@@ -153,7 +155,7 @@ class HuffmanCompression:
         root = self.binary_tree_huffman()
         encoder = HuffmanCompression.code_generator(root)
         for character in self.sequence_to_compress:
-            self.sequence_to_binary += encoder[character]
+            self.sequence_to_binary = self.sequence_to_binary + encoder[character]
 
     @staticmethod
     def padding_binary(binary : str) -> tuple:
@@ -171,8 +173,8 @@ class HuffmanCompression:
         added_zeros = 0
 
         while len(binary) % 8 != 0:
-            binary += '0'
-            added_zeros += 1
+            binary = binary + '0'
+            added_zeros = added_zeros + 1
 
         return (binary, added_zeros)
 
@@ -189,7 +191,7 @@ class HuffmanCompression:
         for i in range(0, len(padded_binary_sequence), 8):
             binary_code = padded_binary_sequence[i:i+8]
             binary_transformation = int(binary_code, 2)
-            self.unicode_sequence += chr(binary_transformation)
+            self.unicode_sequence = self.unicode_sequence + chr(binary_transformation)
 
         with open('compressed_sequence.txt', 'wb') as file:
             encode = self.unicode_sequence.encode('utf-8')
@@ -206,7 +208,7 @@ class HuffmanCompression:
 
         for char in self.unicode_sequence:
             ord_char = ord(char)
-            binary += '{:08b}'.format(ord_char)
+            binary = binary + format(ord_char, '08b')
 
         padding_results = HuffmanCompression.padding_binary(self.sequence_to_binary)
         number_of_added_zeros = padding_results[1]
@@ -214,15 +216,49 @@ class HuffmanCompression:
 
         return binary
 
+    def decompression_process(self) -> str:
 
+        """ this method is used for the decompression process.
+            From the binary code and the dict_encoder which is a 
+            dictionnary which have characters as key and binary code
+            (resulting from the huffman binary tree) as a value.
+            This method travers the binary code and append each number
+            to code variable if this code presents in the values then we 
+            get the key which represents the character.
+
+        Returns:
+            str: sequence decompressed
+        """
+        huffman_tree = self.binary_tree_huffman()
+        binary_code = self.unicode_to_binary()
+        dict_encoder = HuffmanCompression.code_generator(huffman_tree)
+        
+        keys = dict_encoder.keys()
+        values = dict_encoder.values()
+        
+        keys_list = list(keys)
+        values_list = list(values)
+
+        code = ''
+        decompression_result = ''
+
+        for number in binary_code:
+            code += number
+            if code in values_list:
+                index = values_list.index(code)
+                decompression_result = decompression_result + keys_list[index]
+                code = ''
+        
+        return decompression_result
 
 
 if __name__ == '__main__':
 
-    sequence = 'ACTGC'
-
-    obj = HuffmanCompression(sequence.replace(' ', ''))
+    seq = SeqIO.read('NC_009513.fasta', 'fasta').seq
+    sequence = Bwt(seq)
+    
+    obj = HuffmanCompression(sequence.bwt_construction())
     obj.sequence_to_binary_transformation()
-    print(obj.sequence_to_binary)
     obj.binary_to_unicode()
-    print(obj.unicode_to_binary())
+
+    
