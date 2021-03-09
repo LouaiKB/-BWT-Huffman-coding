@@ -19,7 +19,7 @@ class Bwt:
         self.sequence = sequence + '$'
 
     @staticmethod
-    def bwt_construction_matrix(sequence : str) -> list:
+    def bwt_construction_matrix(sequence : str) -> None:
 
         """ static method to create the matrix that generates 
             the bwt sequence from the original sequence.
@@ -30,21 +30,11 @@ class Bwt:
         Returns:
             list: the Bwt construction matrix
         """
-        # our matrix is presented as an array
-        bwt_matrix = []
-        bwt_matrix.append(sequence)
+        yield sequence
 
-        last_row_of_the_bwt_matrix = bwt_matrix[-1]
-
-        # once the last elements of the last row is '$' then the matrix is completed
-        while last_row_of_the_bwt_matrix[-2] != '$':
-            # after each shift the shifted sequence is appended to the matrix
-            bwt_matrix.append(last_row_of_the_bwt_matrix[-1] + last_row_of_the_bwt_matrix[:-1])
-            last_row_of_the_bwt_matrix = bwt_matrix[-1]
-
-        # sort our matrix        
-        bwt_matrix.sort()
-        return bwt_matrix
+        while sequence[-2] != '$':
+            sequence = sequence[-1] + sequence[:-1]
+            yield sequence
     
     @staticmethod
     def bwt_reconstruction_matrix(bwt_sequence : str) -> list:
@@ -76,6 +66,7 @@ class Bwt:
         """
 
         bwt_construction_matrix = Bwt.bwt_construction_matrix(self.sequence)
+        bwt_construction_matrix = sorted(bwt_construction_matrix)
         bwt = ''
         for row in bwt_construction_matrix:
             # we return the last column as a string
@@ -98,3 +89,7 @@ class Bwt:
                 break
 
         return seq
+
+if __name__ == '__main__':
+    x = Bwt('ACTTGATC')
+    print(x.bwt_construction())

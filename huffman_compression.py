@@ -255,10 +255,6 @@ class HuffmanCompression:
 if __name__ == '__main__':
 
     seq = SeqIO.read('NC_009513.fasta', 'fasta').seq
-    sequence = Bwt(seq)
-    
-    obj = HuffmanCompression(sequence.bwt_construction())
-    obj.sequence_to_binary_transformation()
-    obj.binary_to_unicode()
-
-    
+    x = Bwt(seq)
+    print(x.bwt_construction())
+    print('reconstruction: ', x.bwt_reconstruction())
