@@ -193,9 +193,9 @@ class HuffmanCompression:
             binary_transformation = int(binary_code, 2)
             self.unicode_sequence = self.unicode_sequence + chr(binary_transformation)
 
-        with open('compressed_sequence.txt', 'wb') as file:
-            encode = self.unicode_sequence.encode('utf-8')
-            file.write(encode)
+        # with open('compressed_sequence.txt', 'wb') as file:
+        #     encode = self.unicode_sequence.encode('utf-8')
+        #     file.write(encode)
 
     def unicode_to_binary(self) -> str:
 
@@ -256,5 +256,6 @@ if __name__ == '__main__':
 
     seq = SeqIO.read('NC_009513.fasta', 'fasta').seq
     x = Bwt(seq)
-    print(x.bwt_construction())
-    print('reconstruction: ', x.bwt_reconstruction())
+    for i in Bwt.bwt_construction_matrix('ACTATCGATCGTCATTGCA$'): 
+        print(i)
+    #print('reconstruction: ', x.bwt_reconstruction())

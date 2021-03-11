@@ -17,6 +17,8 @@ class Bwt:
             sequence (str): the sequence to be transformed by the BWT
         """
         self.sequence = sequence + '$'
+        self.bwt_sequence_encryption = None
+        self.bwt_sequence_decryption = None
 
     @staticmethod
     def bwt_construction_matrix(sequence : str) -> None:
@@ -35,26 +37,25 @@ class Bwt:
         while sequence[-2] != '$':
             sequence = sequence[-1] + sequence[:-1]
             yield sequence
-    
+
+
     @staticmethod
     def bwt_reconstruction_matrix(bwt_sequence : str) -> list:
         """ static method to create the matrix that generates the original sequence
             from the bwt sequence.
-
         Args:
             bwt_sequence (str): the BWT sequence to be retransformed to the original
-
         Returns:
             list: the Bwt reconstruction matrix
         """
         reconstruction_matrix = list(bwt_sequence)
         reconstruction_matrix.sort()
-
+        
         while len(reconstruction_matrix[0]) != len(bwt_sequence):
             for i in range(0, len(reconstruction_matrix), 1):
                 reconstruction_matrix[i] = bwt_sequence[i] + reconstruction_matrix[i]
             reconstruction_matrix.sort()
-
+        
         return reconstruction_matrix
     
     def bwt_construction(self) -> str:
@@ -71,7 +72,7 @@ class Bwt:
         for row in bwt_construction_matrix:
             # we return the last column as a string
             bwt += row[-1]
-        
+
         return bwt
 
     def bwt_reconstruction(self) -> str:
@@ -82,14 +83,17 @@ class Bwt:
         """
         bwt = self.bwt_construction()
         bwt_reconstruction_matrix = Bwt.bwt_reconstruction_matrix(bwt)
-
         for row in bwt_reconstruction_matrix:
             if row[-1] == '$':
                 seq = row
                 break
 
-        return seq
+        return seq.replace('$', '')
 
 if __name__ == '__main__':
-    x = Bwt('ACTTGATC')
-    print(x.bwt_construction())
+    # from Bio import SeqIO
+    # seq = SeqIO.read("C:\\Users\\Louai KB\\OneDrive - Aix-Marseille Université\\SEMESTRE 2\\Algorithmique et structures des données\\Algorithmique-Project\\NC_009513.fasta", 'fasta').seq
+    x = Bwt('ATCATCGAGCATCAGATGATCGTACGATCTACG')
+    # for i in Bwt.bwt_reconstruction_matrix('ATCATCGAGCATCAGATGATCGTACGATCTACG$'):
+    #     print(i)
+    print(x.bwt_reconstruction())
