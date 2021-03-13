@@ -161,12 +161,21 @@ class View(tk.Tk):
             showerror('Error file!', 'Please enter the right file')
 
     def insert_in_text_box(self, inserted_object):
-        global text_box         
-        text_box = tk.Text(top, height=10, width=70)
+        global text_box 
+
+        # adding a scroll bar
+        yscrollbar = tk.Scrollbar(top)
+
+        text_box = tk.Text(top, height=10, width=70,
+                           yscrollcommand=yscrollbar.set)
         text_box.insert('end', inserted_object)
         text_box.tag_configure('center', justify='center')
         text_box.tag_add('center', 1.0, 'end')
         text_box.place(x=120, y=185)
+        yscrollbar.place(in_=text_box, relx=1.0, relheight=1.0, bordermode='outside')
+        yscrollbar.config(command=text_box.yview)
+        
+
             
     def compression_helper(self):
         global first_key
@@ -225,7 +234,6 @@ class View(tk.Tk):
             self.top_level_windows()
             self.insert_in_text_box(gen)
             next_button.configure(command=lambda:self.get_next(gen))
-            next_button.bind('<Enter>', lambda:self.get_next(gen))
         
         else:
             self.top_level_windows()
@@ -250,7 +258,6 @@ class View(tk.Tk):
             
             gen = 'Step 2: The sort of the matrix\nThe BWT sequence is presented in the last column\n' + sorted_matrix + '\n\nBwt Sequence: ' + bwt_sequence
             self.insert_in_text_box(gen)
-
             self.save_patterns()
             next_button.configure(command=lambda:self.save_file(sequence=bwt_sequence))
 
