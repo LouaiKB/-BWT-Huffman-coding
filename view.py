@@ -250,18 +250,25 @@ class View(tk.Tk):
             self.insert_in_text_box(gen)
         
         except StopIteration:
-
+            a = []
+            k = 3
             bwt = self.controller.bwt_encryption_step_by_step()
             sorted_matrix = ''
             for i in sorted(bwt[0]):
                 sorted_matrix += str(i) + '\n'
+                a.append(str(i))
             
             gen = 'Step 2: The sort of the matrix\nThe BWT sequence is presented in the last column\n' + sorted_matrix + '\n\nBwt Sequence: ' + bwt_sequence
             self.insert_in_text_box(gen)
+            for i in a:
+                j = str(k) + '.' + str(len(i) - 1)
+                text_box.tag_add('color', j)
+                text_box.tag_config('color', foreground='red')
+                k += 1 
+
             self.save_patterns()
             next_button.configure(command=lambda:self.save_file(sequence=bwt_sequence))
 
-            
 
 
 
