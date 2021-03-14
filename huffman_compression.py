@@ -193,10 +193,6 @@ class HuffmanCompression:
             binary_transformation = int(binary_code, 2)
             self.unicode_sequence = self.unicode_sequence + chr(binary_transformation)
 
-        # with open('compressed_sequence.txt', 'wb') as file:
-        #     encode = self.unicode_sequence.encode('utf-8')
-        #     file.write(encode)
-
     def unicode_to_binary(self) -> str:
 
         """ this method transforms the unicode characters into binary,
@@ -216,7 +212,7 @@ class HuffmanCompression:
 
         return binary
 
-    def decompression_process(self) -> str:
+    def decompression_process(self, binary_code, dict_encoder) -> str:
 
         """ this method is used for the decompression process.
             From the binary code and the dict_encoder which is a 
@@ -229,10 +225,7 @@ class HuffmanCompression:
         Returns:
             str: sequence decompressed
         """
-        huffman_tree = self.binary_tree_huffman()
-        binary_code = self.unicode_to_binary()
-        dict_encoder = HuffmanCompression.code_generator(huffman_tree)
-        
+
         keys = dict_encoder.keys()
         values = dict_encoder.values()
         
