@@ -471,10 +471,3 @@ class View(tk.Tk):
     def main_loop(self):
         self.mainloop()
 
-
-if __name__ == '__main__':
-
-    obj = View()
-    obj.setup_main_interface()
-    obj.create_buttons()
-    obj.main_loop()
