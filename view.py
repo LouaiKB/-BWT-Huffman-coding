@@ -88,7 +88,7 @@ class View(tk.Tk):
                 button.configure(command=self.decompression)
 
             elif key == 'Full compression':
-                button.configure(command=lambda:"full compression")
+                button.configure(command=lambda:self.bwt_encryption(full=True))
 
             elif key == 'Bwt encryption':
                 button.configure(command=self.bwt_encryption)
@@ -155,7 +155,7 @@ class View(tk.Tk):
 
 
 
-    def compression(self):
+    def compression(self, full=None):
 
         global binary_co
         global encoder
@@ -163,19 +163,32 @@ class View(tk.Tk):
         global size_of_original_file
 
         try:
-            size_of_original_file = self.open_and_get_size()
+            
+            if not full:
 
-            self.controller.get_sequence_from_file()
-            self.top_level_windows()
+                size_of_original_file = self.open_and_get_size()
 
-            results = self.controller.compression_process_without_bwt(self.controller.sequence)
-            encoder = results.pop('encoder')
+                self.controller.get_sequence_from_file()
+                self.top_level_windows()
 
-            unicode = results[list(results)[-1]]
-            binary_co = results[list(results)[1]]
-        
-            self.compression_decompression_helper(results)
-        
+                results = self.controller.compression_process_without_bwt(self.controller.sequence)
+                encoder = results.pop('encoder')
+
+                unicode = results[list(results)[-1]]
+                binary_co = results[list(results)[1]]
+            
+                self.compression_decompression_helper(results)
+
+            else:
+
+                results = self.controller.compression_process_without_bwt(self.controller.sequence, full=True)
+                encoder = results.pop('encoder')
+
+                unicode = results[list(results)[-1]]
+                binary_co = results[list(results)[1]]
+            
+                self.compression_decompression_helper(results)
+                        
         except:
 
             showerror('Error file!', 'Please enter the right file')
@@ -188,8 +201,8 @@ class View(tk.Tk):
             
             if not decompression:
                 next_button.configure(command=lambda:self.delete_text_box(first_key, results))
-            
-            next_button.configure(command=lambda:self.delete_text_box(first_key, results, decompression=True))
+            else:
+                next_button.configure(command=lambda:self.delete_text_box(first_key, results, decompression=True))
         
         except IndexError:
             if not decompression:
@@ -267,12 +280,13 @@ class View(tk.Tk):
         except:
             pass
 
-    def bwt_encryption(self):
+    def bwt_encryption(self, full=None):
         global bwt_matrix
         global gen
         global bwt_sequence
+        global size_of_original_file
 
-        self.open_and_get_size()
+        size_of_original_file = self.open_and_get_size()
         self.controller.get_sequence_from_file()
         
         ask_quest = askquestion('Bwt encryption', 'Would you like to proceed the step by step Burrows Wheeler Transform?')
@@ -284,14 +298,24 @@ class View(tk.Tk):
             gen = 'Step 1: The matrix construction '
             self.top_level_windows()
             self.insert_in_text_box(gen)
-            next_button.configure(command=lambda:self.get_next(gen))
+            
+            if full:
+                next_button.configure(command=lambda:self.get_next(gen, full=True))
+
+            else:
+                next_button.configure(command=lambda:self.get_next(gen))
         
         else:
             self.top_level_windows()
-            self.insert_in_text_box(bwt_sequence)
-            self.save_patterns()
-            next_button.configure(command=lambda: self.save_file(sequence=bwt_sequence))
-
+            text = 'The Bwt sequence\n' + bwt_sequence
+            self.insert_in_text_box(text)
+            
+            if not full:
+                self.save_patterns()
+                next_button.configure(command=lambda: self.save_file(sequence=bwt_sequence))
+            else:
+                next_button.configure(command=self.full_compression_helper)
+    
     def bwt_decryption(self):
         global bwt_matrix_re
         global sequence_re
@@ -315,20 +339,26 @@ class View(tk.Tk):
         self.insert_in_text_box(gen)
         next_button.configure(command=lambda:self.get_next(gen, decryption=True, row_index=row_index))
 
-    
-    def get_next(self, gen, decryption=None, row_index=None):
+    def full_compression_helper(self):
+        gen = 'Now the compression process'
+        self.insert_in_text_box(gen)
+        self.controller.sequence = bwt_sequence
+        next_button.configure(command=lambda:self.compression(full=True))
+
+    def get_next(self, gen, decryption=None, row_index=None, full=None):
 
         if not decryption:
+
             try:
                 gen = ''
                 gen += text_box.get("1.0", "end") + next(bwt_matrix)
                 self.insert_in_text_box(gen)
-            
+
             except StopIteration:
 
                 sorted_bwt = []
                 indexx = 3
-                
+
                 bwt = self.controller.bwt_encryption_step_by_step()
                 sorted_matrix = ''
                 
@@ -338,14 +368,19 @@ class View(tk.Tk):
                 
                 gen = 'Step 2: The sort of the matrix\nThe BWT sequence is presented in the last column\n' + sorted_matrix + '\n\nBwt Sequence: ' + bwt_sequence
                 self.insert_in_text_box(gen)
+
                 for i in sorted_bwt:
                     j = str(indexx) + '.' + str(len(i) - 1)
                     text_box.tag_add('color', j)
                     text_box.tag_config('color', foreground='red')
                     indexx += 1 
 
-                self.save_patterns()
-                next_button.configure(command=lambda:self.save_file(sequence=bwt_sequence))
+                if not full:
+                    self.save_patterns()
+                    next_button.configure(command=lambda:self.save_file(sequence=bwt_sequence))
+        
+                else:
+                    next_button.configure(command=self.full_compression_helper)
         else:
 
             try:
