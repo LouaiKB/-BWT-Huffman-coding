@@ -97,7 +97,7 @@ class View(tk.Tk):
                 button.configure(command=self.bwt_decryption)
 
             elif key == 'Full decompression':
-                button.configure(command=lambda:"full decompression")
+                button.configure(command=lambda:self.decompression(full_dec=True))
 
     def open_and_get_size(self, decompression=None):
 
@@ -141,7 +141,7 @@ class View(tk.Tk):
                 showinfo('Successful message', 'File saved successfully!\nThe size of the original file is: %s\nThe size of the compressed file is: %s'
                         %(str(size_of_original_file), str(size_of_compressed_file)))
 
-                top.destroy()
+                top.quit()
 
             except AttributeError:
                 showerror('Error file!', 'Please enter a file')
@@ -151,7 +151,7 @@ class View(tk.Tk):
             with open(file_to_save.name, 'w', encoding='utf8') as f:
                 f.write(sequence)
             showinfo('Successful message', 'File saved successfully!')
-            top.destroy()
+            top.quit()
 
 
 
@@ -181,7 +181,7 @@ class View(tk.Tk):
 
             else:
 
-                results = self.controller.compression_process_without_bwt(self.controller.sequence, full=True)
+                results = self.controller.compression_process_without_bwt(self.controller.sequence)
                 encoder = results.pop('encoder')
 
                 unicode = results[list(results)[-1]]
@@ -193,26 +193,48 @@ class View(tk.Tk):
 
             showerror('Error file!', 'Please enter the right file')
 
-    def compression_decompression_helper(self, results, decompression=None):
+    def compression_decompression_helper(self, results, decompression=None, full_dec=None):
         try:
+
             first_key = list(results)[0]
             inserted_object = first_key + '\n' + results[first_key] + '\n'
             self.insert_in_text_box(inserted_object)
             
-            if not decompression:
-                next_button.configure(command=lambda:self.delete_text_box(first_key, results))
-            else:
+            if decompression:
                 next_button.configure(command=lambda:self.delete_text_box(first_key, results, decompression=True))
+
+            else:
+                next_button.configure(command=lambda:self.delete_text_box(first_key, results))
+               
         
         except IndexError:
-            if not decompression:
+
+            if decompression:
+                
+                if full_dec:
+                    self.full_compression_decompression_helper(full_dec=True) 
+
+                else:
+                    self.save_patterns(decompression=True)
+                    text_box.delete(3.0, 'end')         
+
+            else:
                 self.save_patterns()
-        
-            self.save_patterns(decompression=True)
-            text_box.delete(3.0, 'end')
+
+                
 
     def delete_text_box(self, first_key, results, decompression=None):
-        if not decompression:
+        if decompression:
+            text_box.delete(1.0, 'end')
+
+            if len(results) != 0:
+                results.pop(first_key)
+                self.compression_decompression_helper(results, decompression=True, full_dec=True)
+
+            else:
+                self.save_file(sequence=decompressed_sequence)
+            
+        else:
             text_box.delete(1.0, 'end')
 
             if len(results) != 0:
@@ -225,15 +247,6 @@ class View(tk.Tk):
                     'binary_seq': binary_co
                 }
                 self.save_file(additionnal_data)
-        else:
-            text_box.delete(1.0, 'end')
-
-            if len(results) != 0:
-                results.pop(first_key)
-                self.compression_decompression_helper(results)
-
-            else:
-                self.save_file(sequence=decompressed_sequence)
 
 
     def insert_in_text_box(self, inserted_object):
@@ -264,10 +277,11 @@ class View(tk.Tk):
         
         button_q.place(x=590, y=400)
 
-    def decompression(self):
+    def decompression(self, full_dec=None):
         global decompressed_sequence
 
         try:
+
             files = self.open_and_get_size(decompression=True)
             self.top_level_windows()
             file_decompress = files[0]
@@ -275,10 +289,15 @@ class View(tk.Tk):
             results_deco = self.controller.decompression_process_without_bwt(file_decompress.name, json_file['encoder'],
                                                             json_file['binary_seq'])
             decompressed_sequence = results_deco[list(results_deco)[-1]]
-            self.compression_decompression_helper(results_deco, decompression=True)
+            
+            if full_dec:
+                self.compression_decompression_helper(results_deco, decompression=True, full_dec=True)
+
+            else:
+                self.compression_decompression_helper(results_deco, decompression=True)
 
         except:
-            pass
+            showerror('Error file!', 'Please enter the right file')
 
     def bwt_encryption(self, full=None):
         global bwt_matrix
@@ -316,20 +335,25 @@ class View(tk.Tk):
             else:
                 next_button.configure(command=self.full_compression_helper)
     
-    def bwt_decryption(self):
+    def bwt_decryption(self, full_dec=None):
         global bwt_matrix_re
         global sequence_re
         global row_index
         
-        self.open_and_get_size()
-        self.controller.get_sequence_from_file()
+        if full_dec:
+            self.controller.sequence = decompressed_sequence
+ 
+        else:
+            self.open_and_get_size()
+            self.controller.get_sequence_from_file()
+            self.top_level_windows()
+
         results_bwt = self.controller.bwt_decryption()
         bwt_matrix_re = results_bwt[0]
         sequence_index = results_bwt[1]
         sequence_re = sequence_index[0]
         row_index = sequence_index[1]
         gen = 'Step 1: The Bwt sequence \n' + self.controller.sequence
-        self.top_level_windows()
         self.insert_in_text_box(gen)
         next_button.configure(command=self.step_tw_bwt_dec)
     
@@ -339,11 +363,16 @@ class View(tk.Tk):
         self.insert_in_text_box(gen)
         next_button.configure(command=lambda:self.get_next(gen, decryption=True, row_index=row_index))
 
-    def full_compression_helper(self):
-        gen = 'Now the compression process'
-        self.insert_in_text_box(gen)
-        self.controller.sequence = bwt_sequence
-        next_button.configure(command=lambda:self.compression(full=True))
+    def full_compression_decompression_helper(self, full_dec=None):
+        if full_dec:
+            text = 'Now the decryption process'
+            self.insert_in_text_box(text)
+            next_button.configure(command=lambda:self.bwt_decryption(full_dec=True))
+        else:
+            gen = 'Now the compression process'
+            self.insert_in_text_box(gen)
+            self.controller.sequence = bwt_sequence
+            next_button.configure(command=lambda:self.compression(full=True))
 
     def get_next(self, gen, decryption=None, row_index=None, full=None):
 
