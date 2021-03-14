@@ -75,25 +75,31 @@ class Bwt:
 
         return bwt
 
-    def bwt_reconstruction(self) -> str:
+    def yield_(self):
+        s = Bwt.bwt_reconstruction_matrix(self.sequence)
+        for i in s:
+            yield i
+
+    def bwt_reconstruction(self, bwt) -> str:
         """ This method will proceed the reconstruction of the sequence
 
         Returns:
             str: original sequence
         """
-        bwt = self.bwt_construction()
         bwt_reconstruction_matrix = Bwt.bwt_reconstruction_matrix(bwt)
         for row in bwt_reconstruction_matrix:
             if row[-1] == '$':
                 seq = row
                 break
-
-        return seq.replace('$', '')
+        index_row = bwt_reconstruction_matrix.index(seq)
+        return (seq.replace('$', ''), index_row)
 
 if __name__ == '__main__':
     # from Bio import SeqIO
     # seq = SeqIO.read("C:\\Users\\Louai KB\\OneDrive - Aix-Marseille Université\\SEMESTRE 2\\Algorithmique et structures des données\\Algorithmique-Project\\NC_009513.fasta", 'fasta').seq
-    x = Bwt('ATCATCGAGCATCAGATGATCGTACGATCTACG')
+    x = Bwt('ATCATCACGATCTACG')
+    a = x.bwt_construction()
+    print(Bwt.bwt_reconstruction_matrix('AC$GCCTAAACAG'))
+    print(x.bwt_reconstruction('AC$GCCTAAACAG')[1])
     # for i in Bwt.bwt_reconstruction_matrix('ATCATCGAGCATCAGATGATCGTACGATCTACG$'):
     #     print(i)
-    print(x.bwt_reconstruction())
