@@ -85,7 +85,7 @@ class View(tk.Tk):
                 button.configure(command=self.compression)
 
             elif key == 'Decompress':
-                button.configure(command=lambda:"decompress")
+                button.configure(command=self.decompression)
 
             elif key == 'Full compression':
                 button.configure(command=lambda:"full compression")
@@ -93,19 +93,39 @@ class View(tk.Tk):
             elif key == 'Bwt encryption':
                 button.configure(command=self.bwt_encryption)
 
-            elif key == 'Bwt decrytpion':
-                button.configure(command=lambda:"Bwt decryption")
+            elif key == 'Bwt decryption':
+                button.configure(command=self.bwt_decryption)
 
             elif key == 'Full decompression':
                 button.configure(command=lambda:"full decompression")
 
-    def open_and_get_size(self):
-        file = askopenfile(parent=self, mode='r', title='choose a file', 
-                filetypes=(('Text files', '*.txt'), ('Fasta file', '*.fasta')))
-        self.controller = Controller(file.name)
-        size_of_original_file = os.path.getsize(file.name)
+    def open_and_get_size(self, decompression=None):
 
-        return (file, size_of_original_file)
+        if not decompression:
+
+            file = askopenfile(parent=self, mode='r', title='choose a file', 
+                    filetypes=(('Text files', '*.txt'), ('Fasta file', '*.fasta')))
+
+            self.controller = Controller(file.name)
+            size_of_original_file = os.path.getsize(file.name)
+
+            return size_of_original_file
+
+        else:
+            showinfo('Decompression process', 'please choose the txt file and the json file to decompress')
+
+            file_decompress = askopenfile(parent=self, mode='r', title='Choose a decompression file',
+                    filetypes=(('Text file', '*.txt'), ("All Files","*.*")))
+            print('hhhhhhh')
+            self.controller = Controller(file_decompress.name)
+
+            json_file = askopenfile(parent=self, mode='r', title='Choose the associated json file',
+                            filetypes=(('Json file', '*.json'), ('All File', '*.*')))
+
+            with open(json_file.name) as f:
+                data = json.load(f)
+
+            return (file_decompress, data)
 
     def save_file(self, additionnal_data=None, sequence=None):
 
@@ -134,16 +154,16 @@ class View(tk.Tk):
             top.destroy()
 
 
+
     def compression(self):
-        global results
+
         global binary_co
         global encoder
         global unicode
         global size_of_original_file
 
         try:
-            open_file = self.open_and_get_size()
-            size_of_original_file = open_file[1]
+            size_of_original_file = self.open_and_get_size()
 
             self.controller.get_sequence_from_file()
             self.top_level_windows()
@@ -154,11 +174,54 @@ class View(tk.Tk):
             unicode = results[list(results)[-1]]
             binary_co = results[list(results)[1]]
         
-            self.compression_helper()
+            self.compression_decompression_helper(results)
         
         except:
 
             showerror('Error file!', 'Please enter the right file')
+
+    def compression_decompression_helper(self, results, decompression=None):
+        try:
+            first_key = list(results)[0]
+            inserted_object = first_key + '\n' + results[first_key] + '\n'
+            self.insert_in_text_box(inserted_object)
+            
+            if not decompression:
+                next_button.configure(command=lambda:self.delete_text_box(first_key, results))
+            
+            next_button.configure(command=lambda:self.delete_text_box(first_key, results, decompression=True))
+        
+        except IndexError:
+            if not decompression:
+                self.save_patterns()
+        
+            self.save_patterns(decompression=True)
+            text_box.delete(3.0, 'end')
+
+    def delete_text_box(self, first_key, results, decompression=None):
+        if not decompression:
+            text_box.delete(1.0, 'end')
+
+            if len(results) != 0:
+                results.pop(first_key)
+                self.compression_decompression_helper(results)
+
+            else:
+                additionnal_data = {
+                    'encoder': encoder, 
+                    'binary_seq': binary_co
+                }
+                self.save_file(additionnal_data)
+        else:
+            text_box.delete(1.0, 'end')
+
+            if len(results) != 0:
+                results.pop(first_key)
+                self.compression_decompression_helper(results)
+
+            else:
+                self.save_file(sequence=decompressed_sequence)
+
 
     def insert_in_text_box(self, inserted_object):
         global text_box 
@@ -174,36 +237,9 @@ class View(tk.Tk):
         text_box.place(x=120, y=185)
         yscrollbar.place(in_=text_box, relx=1.0, relheight=1.0, bordermode='outside')
         yscrollbar.config(command=text_box.yview)
-        
 
-            
-    def compression_helper(self):
-        global first_key
 
-        try:
-            first_key = list(results)[0]
-            inserted_object = first_key + '\n' + results[first_key] + '\n'
-            self.insert_in_text_box(inserted_object)
-            next_button.configure(command=self.delete_text_box)
-        
-        except IndexError:
-            self.save_patterns()
-
-    def delete_text_box(self):
-        text_box.delete(1.0, 'end')
-
-        if len(results) != 0:
-            results.pop(first_key)
-            self.compression_helper()
-
-        else:
-            additionnal_data = {
-                'encoder': encoder, 
-                'binary_seq': binary_co
-            }
-            self.save_file(additionnal_data)
-
-    def save_patterns(self):
+    def save_patterns(self, decompression=None):
         next_button_text.set('Save')
         text_box.insert('end', '\nProcess completed whould you like to save the sequence?')
         text_box.tag_configure('center', justify='center')
@@ -215,7 +251,22 @@ class View(tk.Tk):
         
         button_q.place(x=590, y=400)
 
-    
+    def decompression(self):
+        global decompressed_sequence
+
+        try:
+            files = self.open_and_get_size(decompression=True)
+            self.top_level_windows()
+            file_decompress = files[0]
+            json_file = files[1]
+            results_deco = self.controller.decompression_process_without_bwt(file_decompress.name, json_file['encoder'],
+                                                            json_file['binary_seq'])
+            decompressed_sequence = results_deco[list(results_deco)[-1]]
+            self.compression_decompression_helper(results_deco, decompression=True)
+
+        except:
+            pass
+
     def bwt_encryption(self):
         global bwt_matrix
         global gen
@@ -241,37 +292,76 @@ class View(tk.Tk):
             self.save_patterns()
             next_button.configure(command=lambda: self.save_file(sequence=bwt_sequence))
 
-    
-    def get_next(self, gen):
-
-        try:
-            gen = ''
-            gen += text_box.get("1.0", "end") + next(bwt_matrix)
-            self.insert_in_text_box(gen)
+    def bwt_decryption(self):
+        global bwt_matrix_re
+        global sequence_re
+        global row_index
         
-        except StopIteration:
-            a = []
-            k = 3
-            bwt = self.controller.bwt_encryption_step_by_step()
-            sorted_matrix = ''
-            for i in sorted(bwt[0]):
-                sorted_matrix += str(i) + '\n'
-                a.append(str(i))
+        self.open_and_get_size()
+        self.controller.get_sequence_from_file()
+        results_bwt = self.controller.bwt_decryption()
+        bwt_matrix_re = results_bwt[0]
+        sequence_index = results_bwt[1]
+        sequence_re = sequence_index[0]
+        row_index = sequence_index[1]
+        gen = 'Step 1: The Bwt sequence \n' + self.controller.sequence
+        self.top_level_windows()
+        self.insert_in_text_box(gen)
+        next_button.configure(command=self.step_tw_bwt_dec)
+    
+    def step_tw_bwt_dec(self):
+
+        gen = 'Step2: Sorted matrix construction,\nThe bwt sequence is the one who has $ in the end'
+        self.insert_in_text_box(gen)
+        next_button.configure(command=lambda:self.get_next(gen, decryption=True, row_index=row_index))
+
+    
+    def get_next(self, gen, decryption=None, row_index=None):
+
+        if not decryption:
+            try:
+                gen = ''
+                gen += text_box.get("1.0", "end") + next(bwt_matrix)
+                self.insert_in_text_box(gen)
             
-            gen = 'Step 2: The sort of the matrix\nThe BWT sequence is presented in the last column\n' + sorted_matrix + '\n\nBwt Sequence: ' + bwt_sequence
-            self.insert_in_text_box(gen)
-            for i in a:
-                j = str(k) + '.' + str(len(i) - 1)
-                text_box.tag_add('color', j)
-                text_box.tag_config('color', foreground='red')
-                k += 1 
+            except StopIteration:
 
-            self.save_patterns()
-            next_button.configure(command=lambda:self.save_file(sequence=bwt_sequence))
+                sorted_bwt = []
+                indexx = 3
+                
+                bwt = self.controller.bwt_encryption_step_by_step()
+                sorted_matrix = ''
+                
+                for i in sorted(bwt[0]):
+                    sorted_matrix += str(i) + '\n'
+                    sorted_bwt.append(str(i))
+                
+                gen = 'Step 2: The sort of the matrix\nThe BWT sequence is presented in the last column\n' + sorted_matrix + '\n\nBwt Sequence: ' + bwt_sequence
+                self.insert_in_text_box(gen)
+                for i in sorted_bwt:
+                    j = str(indexx) + '.' + str(len(i) - 1)
+                    text_box.tag_add('color', j)
+                    text_box.tag_config('color', foreground='red')
+                    indexx += 1 
 
+                self.save_patterns()
+                next_button.configure(command=lambda:self.save_file(sequence=bwt_sequence))
+        else:
 
+            try:
+                gen = ''
+                gen += text_box.get("1.0", "end") + next(bwt_matrix_re)
+                self.insert_in_text_box(gen)
 
-
+            except StopIteration:
+                gen = text_box.get("1.0", "end") + "\n\nThe sequence: " + str(sequence_re)
+                self.insert_in_text_box(gen)
+                text_box.tag_add('color_re', str(3 + row_index) + '.0', str(3 + row_index) + '.' + str(len(sequence_re) + 1))
+                text_box.tag_config('color_re', foreground='red')
+                self.save_patterns()
+                next_button.configure(command=lambda:self.save_file(sequence=sequence_re))
+    
+    
     def main_loop(self):
         self.mainloop()
 
