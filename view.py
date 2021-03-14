@@ -25,7 +25,9 @@ class PlaceImage:
 
     @staticmethod
     def place_image(root):
-        root.geometry('800x500')
+        global text_box_window
+
+        root.geometry('800x700')
         canvas_for_padding = tk.Canvas(root, width=600, height=300)
         canvas_for_padding.grid(columnspan=3, rowspan=3)
         logo = Image.open('photos/genome.png')
@@ -34,23 +36,42 @@ class PlaceImage:
         genome_compression_logo_label.image = genome_compression_logo
         genome_compression_logo_label.grid(row=0, column=1)
 
+        yscrollbar = tk.Scrollbar(root)
+        text_box_window = tk.Text(root, height=10, width=70,
+                           yscrollcommand=yscrollbar.set)
+        text_box_window.tag_configure('center', justify='center')
+        text_box_window.tag_add('center', 1.0, 'end')
+        text_box_window.place(x=120, y=185)
+        yscrollbar.place(in_=text_box_window, relx=1.0, relheight=1.0, bordermode='outside')
+        yscrollbar.config(command=text_box_window.yview)
+
+
 class View(tk.Tk):
 
     def __init__(self):
         super().__init__()
         self.controller = None
         self.button_dict = {
-            "Compress": (60, 250), 
-            "Decompress": (320, 250), 
-            "Full compression": (590, 250), 
-            "Bwt encryption": (60, 350), 
-            "Bwt decryption": (320, 350),
-            "Full decompression": (590, 350),
-            "Quit": (389, 460)
+            "Compress": (60, 410), 
+            "Decompress": (320, 410), 
+            "Full compression": (590, 410), 
+            "Bwt encryption": (60, 510), 
+            "Bwt decryption": (320, 510),
+            "Full decompression": (590, 510),
+            "Quit": (389, 630)
         }
 
     def setup_main_interface(self) -> None:
-         PlaceImage.place_image(self)
+        PlaceImage.place_image(self)
+        
+        label = tk.Label(self, text='Enter the sequence manually or with a file (txt, fasta)',
+                font='Raleway 10 italic', fg='#737373')
+
+        label.place(x=250, y=360)
+
+    def get_content_of_text_box(self):
+        content = text_box_window.get(1.0, 'end')
+        return content
 
     def top_level_windows(self):
         global top
@@ -116,7 +137,7 @@ class View(tk.Tk):
 
             file_decompress = askopenfile(parent=self, mode='r', title='Choose a decompression file',
                     filetypes=(('Text file', '*.txt'), ("All Files","*.*")))
-            print('hhhhhhh')
+
             self.controller = Controller(file_decompress.name)
 
             json_file = askopenfile(parent=self, mode='r', title='Choose the associated json file',
@@ -162,13 +183,19 @@ class View(tk.Tk):
         global unicode
         global size_of_original_file
 
+        content = self.get_content_of_text_box()
         try:
             
             if not full:
 
-                size_of_original_file = self.open_and_get_size()
+                if content == '\n':
+                    size_of_original_file = self.open_and_get_size()
+                    self.controller.get_sequence_from_file()
 
-                self.controller.get_sequence_from_file()
+                else:
+                    self.controller = Controller('')
+                    self.controller.sequence = content.strip()
+
                 self.top_level_windows()
 
                 results = self.controller.compression_process_without_bwt(self.controller.sequence)
@@ -304,10 +331,17 @@ class View(tk.Tk):
         global gen
         global bwt_sequence
         global size_of_original_file
-
-        size_of_original_file = self.open_and_get_size()
-        self.controller.get_sequence_from_file()
         
+        content = self.get_content_of_text_box()
+        
+        if content == '\n':
+            size_of_original_file = self.open_and_get_size()
+            self.controller.get_sequence_from_file()
+        
+        else:
+            self.controller = Controller('')
+            self.controller.sequence = content.strip()
+
         ask_quest = askquestion('Bwt encryption', 'Would you like to proceed the step by step Burrows Wheeler Transform?')
         results_bwt = self.controller.bwt_encryption_step_by_step()
         bwt_matrix = results_bwt[0]
@@ -340,13 +374,21 @@ class View(tk.Tk):
         global sequence_re
         global row_index
         
+        content = self.get_content_of_text_box()
+
         if full_dec:
             self.controller.sequence = decompressed_sequence
  
         else:
-            self.open_and_get_size()
-            self.controller.get_sequence_from_file()
-            self.top_level_windows()
+
+            if content == '\n':
+                self.open_and_get_size()
+                self.controller.get_sequence_from_file()
+                self.top_level_windows()
+            else:
+                self.controller = Controller('')
+                self.controller.sequence = content.strip()
+                self.top_level_windows()
 
         results_bwt = self.controller.bwt_decryption()
         bwt_matrix_re = results_bwt[0]
@@ -409,7 +451,7 @@ class View(tk.Tk):
                     next_button.configure(command=lambda:self.save_file(sequence=bwt_sequence))
         
                 else:
-                    next_button.configure(command=self.full_compression_helper)
+                    next_button.configure(command=self.full_compression_decompression_helper)
         else:
 
             try:
