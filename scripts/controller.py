@@ -127,13 +127,5 @@ class Controller:
         compression_results = self.compression_process_without_bwt(bwt_sequence)
         compression_results['bwt_sequence'] = bwt_results[1]
         compression_results['bwt_matrix'] = bwt_results[0]
+        
         return compression_results
-
-    def full_decompression(self):
-        pass
-
-if __name__ == '__main__':
-    obj = Controller("C:\\Users\\Louai KB\\OneDrive - Aix-Marseille Université\\SEMESTRE 2\\Algorithmique et structures des données\\Algorithmique-Project\\NC_009513.fasta")
-    obj.get_sequence_from_file()
-    k = obj.compression_process_without_bwt(obj.sequence)
-    print(k)

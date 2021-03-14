@@ -244,11 +244,3 @@ class HuffmanCompression:
         
         return decompression_result
 
-
-if __name__ == '__main__':
-
-    seq = SeqIO.read('NC_009513.fasta', 'fasta').seq
-    x = Bwt(seq)
-    for i in Bwt.bwt_construction_matrix('ACTATCGATCGTCATTGCA$'): 
-        print(i)
-    #print('reconstruction: ', x.bwt_reconstruction())

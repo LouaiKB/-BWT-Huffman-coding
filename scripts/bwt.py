@@ -91,15 +91,7 @@ class Bwt:
             if row[-1] == '$':
                 seq = row
                 break
+        
         index_row = bwt_reconstruction_matrix.index(seq)
+        
         return (seq.replace('$', ''), index_row)
-
-if __name__ == '__main__':
-    # from Bio import SeqIO
-    # seq = SeqIO.read("C:\\Users\\Louai KB\\OneDrive - Aix-Marseille Université\\SEMESTRE 2\\Algorithmique et structures des données\\Algorithmique-Project\\NC_009513.fasta", 'fasta').seq
-    x = Bwt('ATCATCACGATCTACG')
-    a = x.bwt_construction()
-    print(Bwt.bwt_reconstruction_matrix('AC$GCCTAAACAG'))
-    print(x.bwt_reconstruction('AC$GCCTAAACAG')[1])
-    # for i in Bwt.bwt_reconstruction_matrix('ATCATCGAGCATCAGATGATCGTACGATCTACG$'):
-    #     print(i)
