@@ -15,7 +15,7 @@ class HuffmanCompression:
 
         """Constructor of our class
         Args:
-            sequence (str): the sequence to be compressed
+            sequence (str): the sequence to be compressed, ex: The Burrows Wheeler Transform.
         """
         self.sequence_to_compress = sequence
         self.sequence_to_binary = ''
@@ -24,13 +24,14 @@ class HuffmanCompression:
     @staticmethod
     def frequency_calculator(sequence : str) -> dict:
 
-        """ this static method allows to compute the frequency of each
-            character in the sequence
+        """ this static method allows us to compute the frequency of each
+            character in the sequence.
         Args:
             sequence (str): the sequence to be compressed
+
         Returns:
             dict: the output will be a dictionnary, keys represent the character
-            and the values represent the frequence.
+            and the values represent the frequence (a dict for character frequencies).
         """
         characters_frequency = dict()
 
@@ -39,11 +40,6 @@ class HuffmanCompression:
                 characters_frequency[character] = 0
 
             characters_frequency[character] = characters_frequency[character] + 1
-
-        # copy() to avoid runtime error
-        for key in characters_frequency.copy():
-            if characters_frequency[key] == 0:
-                characters_frequency.pop(key)
 
         return characters_frequency
 
@@ -81,14 +77,17 @@ class HuffmanCompression:
 
     def binary_tree_huffman(self) -> Tree:
 
-        """ this method constructs the binary tree
+        """ this method constructs the Huffman binary tree
 
         Returns:
             Tree: the binary tree
         """
+        # creating the dictionnary of the character frequencies.
         characters_frequency = HuffmanCompression.frequency_calculator(self.sequence_to_compress)
         list_of_nodes = []
 
+        # loop through the dictionnary and create TreeNode object for each character
+        # by passing the data (value) and the character (key)
         for key in characters_frequency:
             node = TreeNode(characters_frequency[key], key)
             list_of_nodes.append(node)
@@ -98,24 +97,33 @@ class HuffmanCompression:
 
         while tree_object.number_of_leafs(root) != len(characters_frequency):
             lowest_nodes = HuffmanCompression.two_minimum_nodes(list_of_nodes)
+            
             root = TreeNode(lowest_nodes[0].data + lowest_nodes[1].data)
             list_of_nodes.append(root)
+            
             root.left_child = lowest_nodes[1]
             root.right_child = lowest_nodes[0]
+            
             tree_object.node = root
 
         return root
 
     @staticmethod
-    def make_code(node : TreeNode, current_code : str, encoder : dict) -> None:
+    def make_code(node : TreeNode, current_code : str, encoder : dict) -> dict:
 
-        """ This recursive method creates binary code
-            from traversing the binary tree and put 
+        """ This static method implements the "depth first search" recursive algorithm to
+            create the binary code (path of each character in the tree) resulting
+            from traversing the Huffman binary tree and put 
             the binary code as a value for each caracter as a key
             in the encoder dictionnary.
+
         Args:
             node (TreeNode): the TreeNode object
             current_code (str): current binary code
+            encoder(dict): the encoder key = character, value = binary code
+        
+        Returns:
+            encoder(dict): encoder dictionnary.
         """
 
         if node is None:
@@ -123,6 +131,8 @@ class HuffmanCompression:
 
         if node.character is not None:
             encoder[node.character] = current_code
+        
+        # if we go from the parent node to the left child then the path is 1 else is 0.
         
         HuffmanCompression.make_code(node.left_child, current_code + '1', encoder)
         HuffmanCompression.make_code(node.right_child, current_code + '0', encoder)
@@ -133,7 +143,8 @@ class HuffmanCompression:
     def code_generator(root : TreeNode) -> dict:
 
         """ Code generator method, it calls the make_code
-            recursive function to generate binary code.
+            recursive function to generate binary code (path of each
+            caracter in the tree).
 
         Args:
             root (TreeNode): the huffmain tree
@@ -150,7 +161,8 @@ class HuffmanCompression:
 
     def sequence_to_binary_transformation(self) -> None:
 
-        """ This method transform the sequence into binary code
+        """ This method transforms the sequence into a binary sequence
+            usinf the encoder dictionnaru (paths of every character).
         """
         root = self.binary_tree_huffman()
         encoder = HuffmanCompression.code_generator(root)
@@ -161,8 +173,10 @@ class HuffmanCompression:
     def padding_binary(binary : str) -> tuple:
 
         """ this static method adds 0 to the end of the binary sequence 
-            in order to make it divisible by 8 and counts the number of added
-            0 in order to delete them after transforming the caracters to binary. 
+            in order to make it divisible by 8 (because the binary sequence will 
+            be coded in 8-bits) and counts the number of added
+            0 in order to delete them after transforming the encoding caracters to binary
+            for the decompression process. 
 
         Args:
             binary (str): binary sequence
@@ -180,10 +194,7 @@ class HuffmanCompression:
 
     def binary_to_unicode(self) -> None:
 
-        """ this method transforms the binary code into unicode characters,
-            after that it will create a compressed sequence file in order to
-            store the unicode characters code in this file.
-            this file contains the compressed sequence
+        """ this method transforms the binary code into unicode characters (Utf-8).
         """
         padding_results = HuffmanCompression.padding_binary(self.sequence_to_binary)
         padded_binary_sequence = padding_results[0]
@@ -195,7 +206,7 @@ class HuffmanCompression:
 
     def unicode_to_binary(self) -> str:
 
-        """ this method transforms the unicode characters into binary,
+        """ this method transforms the unicode sequence into a binary sequence,
             after it deletes the added 0 by calling the padding_binary()
             static method. 
             this method implements the first step of decompression.
@@ -208,22 +219,28 @@ class HuffmanCompression:
 
         padding_results = HuffmanCompression.padding_binary(self.sequence_to_binary)
         number_of_added_zeros = padding_results[1]
+
+        # Now we remove the paddings
         binary = binary[:-number_of_added_zeros]
 
         return binary
 
-    def decompression_process(self, binary_code, dict_encoder) -> str:
+    def decompression_process(self, binary_code:str, dict_encoder:dict) -> str:
 
         """ this method is used for the decompression process.
             From the binary code and the dict_encoder which is a 
             dictionnary which have characters as key and binary code
-            (resulting from the huffman binary tree) as a value.
+            (paths resulting from the huffman binary tree) as a value.
             This method travers the binary code and append each number
-            to code variable if this code presents in the values then we 
-            get the key which represents the character.
+            to code variable if this code presents in the values (paths) of the encode
+            then we get the key which represents the character.
 
+        Args:
+            binary_code (str): the binary sequence.
+            dict_encoder (dict): dictionnary of characters and the path of each character
+        
         Returns:
-            str: sequence decompressed
+            str: decompressed sequence
         """
 
         keys = dict_encoder.keys()
