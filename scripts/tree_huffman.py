@@ -17,7 +17,7 @@ class TreeNode:
 
         Args:
             data (any): data of our tree node
-            character(str): the character for the leaf
+            character(str): the character for the leaf; None by default.
         """
         self.right_child = None
         self.left_child = None

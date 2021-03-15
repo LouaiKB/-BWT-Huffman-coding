@@ -11,11 +11,14 @@ from bwt import Bwt
 
 class Controller:
 
-    """ Controller class """
+    """ Controller class, that connects between models (bwt and huffman compression) and view (GUI)"""
 
     def __init__(self, file:str) -> None:
 
-        """[summary]
+        """Constructor of the class
+
+        Args:
+            file(str): path of the file that contains the sequence (format of the file txt or fasta)
         """
         self.file = file
         self.sequence = ''
@@ -23,11 +26,13 @@ class Controller:
         self.bwt_object = None
 
     def get_sequence_from_file(self) -> None:
-        """[summary]
 
-        Args:
-            path (str): [description]
+        """ A controller method to retrieve the sequence from the file
+            if the extension of the file is (.fasta) then we 
+            will use the Bio.SeqIO class in order to get the sequence
+            directly from the fasta file.
         """
+
         extension = os.path.splitext(self.file)[1]
         
         if extension == '.fasta':
@@ -42,13 +47,14 @@ class Controller:
                         self.sequence = self.sequence + character
 
     def compression_process_without_bwt(self, sequence:str) -> dict:
-        """[summary]
+        """ This controller method implements the compression process without BWT 
+            (not a full compression).
 
         Args:
-            sequence (str): [description]
+            sequence (str): sequence to be compressed bu the Huffman encoding algorithm.
 
         Returns:
-            dict: [description]
+            dict: a dictionnary that contains the steps of the compression.
         """
         compression_results = {}
         self.huffman_object = HuffmanCompression(sequence)
@@ -63,12 +69,20 @@ class Controller:
 
         return compression_results
     
-    def decompression_process_without_bwt(self, unicode_file, encoder, binary_co) -> dict:
-        """[summary]
+    def decompression_process_without_bwt(self, unicode_file:str, encoder:dict, binary_co:str) -> dict:
+        
+        """ This controller method implements the decompression process without BWT 
+            (not a full decompression).
+
+        Args:
+            unicode_file (str): the file that contains the encoding sequence for the decompression process.
+            encoder(dict): a dictionnary taht contains the paths of each character in the Huffman binary tree.
+            binary_co(str): the binary sequence.
 
         Returns:
-            dict: [description]
+            dict:  a dictionnary that contains the steps of the decompression.
         """
+
         unicode = ''
         with open(unicode_file, 'r', encoding='utf8') as f:
             line = f.read()
@@ -92,10 +106,11 @@ class Controller:
         return decompression_results
 
     def bwt_encryption_step_by_step(self) -> tuple:
-        """[summary]
+        """ This controller method implements the Burrows Wheeler encryption step by step.
 
         Returns:
-            tuple: [description]
+            tuple: the Burrows Wheeler construction matrix as a generator to facilitate implementation in 
+            the view (Gui) and the Burrows Wheeler Transform
         """
         self.bwt_object = Bwt(self.sequence)
         bwt_matrix = self.bwt_object.bwt_construction_matrix(self.bwt_object.sequence)
@@ -103,10 +118,11 @@ class Controller:
         return (bwt_matrix, bwt_sequence)
     
     def bwt_decryption(self) -> tuple:
-        """[summary]
+        """This controller method implements the Burrows Wheeler decryption.
 
         Returns:
-            tuple: [description]
+            tuple: the Burrows Wheeler reconstruction matrix as a generator to facilitate implementation in 
+            the view (Gui) and the Burrows Wheeler Transform decoded to the original sequence.
         """
         self.bwt_object = Bwt('')
         self.bwt_object.sequence = self.sequence
@@ -114,18 +130,3 @@ class Controller:
         bwt_decryption = self.bwt_object.bwt_reconstruction(self.sequence)
         return (bwt_reconstruction_matrix, bwt_decryption)
     
-    def full_compression(self) -> dict:
-        """[summary]
-
-        Returns:
-            dict: [description]
-        """
-        full_compression = {}
-        bwt_results = self.bwt_encryption_step_by_step()
-        full_compression['Step 1']
-        bwt_sequence = bwt_results[1]
-        compression_results = self.compression_process_without_bwt(bwt_sequence)
-        compression_results['bwt_sequence'] = bwt_results[1]
-        compression_results['bwt_matrix'] = bwt_results[0]
-        
-        return compression_results
