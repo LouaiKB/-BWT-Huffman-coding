@@ -3,18 +3,21 @@
 
 Author: Louai KB
 
+Binary tree classes to implement the Huffman Binary Tree for the compression process.
+
 """
 
 class TreeNode:
 
     """This class implements the nodes of the tree"""
 
-    def __init__(self, data : any, character=None) -> None:
+    def __init__(self, data : any, character:str=None) -> None:
 
         """Constructor of our TreeNode class
 
         Args:
             data (any): data of our tree node
+            character(str): the character for the leaf
         """
         self.right_child = None
         self.left_child = None
@@ -24,7 +27,8 @@ class TreeNode:
     def __str__(self) -> str:
 
         """ Prints a string representation of our tree Node
-            as a nawick-like format
+            as the newick format (left child [character] : right child [character])father node
+
         Returns:
             str: string representation
         """
@@ -37,7 +41,13 @@ class TreeNode:
                                    self.right_child.character,
                                    str(self.data))
 
-    def is_leaf(self):
+    def is_leaf(self) -> bool:
+        """ a method to check whether a node is a leaf or not.
+            a leaf has no left child nor right child.
+
+        Returns:
+            bool: True if it's leaf False otherwise.
+        """
         return self.left_child is None and self.right_child is None    
     
 class Tree:
@@ -55,6 +65,12 @@ class Tree:
         self.encoder = {}
     
     def number_of_leafs(self, node : TreeNode) -> int:
+
+        """ a recursive method to compute the number of leafs of a binary tree
+
+        Returns:
+            [int]: number of leafs
+        """
 
         if node is None:
             return 0
