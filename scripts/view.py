@@ -329,7 +329,11 @@ class View(tk.Tk):
             self.insert_in_text_box(inserted_object)
             
             if decompression:
-                next_button.configure(command=lambda:self.delete_text_box(first_key, results, decompression=True))
+                if full_dec:
+                    next_button.configure(command=lambda:self.delete_text_box(first_key, results, 
+                                                                decompression=True, full_dec=True))
+                else:
+                    next_button.configure(command=lambda:self.delete_text_box(first_key, results, decompression=True))
 
             else:
                 next_button.configure(command=lambda:self.delete_text_box(first_key, results))
@@ -351,7 +355,7 @@ class View(tk.Tk):
 
                 
 
-    def delete_text_box(self, first_key:str, results:dict, decompression:bool=None) -> None:
+    def delete_text_box(self, first_key:str, results:dict, decompression:bool=None, full_dec:bool=None) -> None:
 
         """This method is created to delete the text in the text box.
         """
@@ -361,7 +365,12 @@ class View(tk.Tk):
 
             if len(results) != 0:
                 results.pop(first_key)
-                self.compression_decompression_helper(results, decompression=True, full_dec=True)
+                
+                if full_dec:
+                    self.compression_decompression_helper(results, decompression=True, full_dec=True)
+
+                else:
+                    self.compression_decompression_helper(results, decompression=True)
 
             else:
                 self.save_file(sequence=decompressed_sequence)
@@ -522,37 +531,33 @@ class View(tk.Tk):
         global row_index
         
         content = self.get_content_of_text_box()
-        try:
-            if full_dec:
+        # try:
+        if full_dec:
+            print('auihiahe')
+            self.controller.sequence = decompressed_sequence
 
-                if content != '\n':
-                    showerror('Error!', 'Please enter a file')
-                    text_box_window.delete(1.0, 'end')
+        else:
 
-                self.controller.sequence = decompressed_sequence
-    
+            if content == '\n':
+                self.open_and_get_size()
+                self.controller.get_sequence_from_file()
+                self.top_level_windows('BWT decryption')
             else:
+                self.controller = Controller('')
+                self.controller.sequence = content.strip()
+                self.top_level_windows('BWT decryption')
 
-                if content == '\n':
-                    self.open_and_get_size()
-                    self.controller.get_sequence_from_file()
-                    self.top_level_windows('BWT decryption')
-                else:
-                    self.controller = Controller('')
-                    self.controller.sequence = content.strip()
-                    self.top_level_windows('BWT decryption')
-
-            results_bwt = self.controller.bwt_decryption()
-            bwt_matrix_re = results_bwt[0]
-            sequence_index = results_bwt[1]
-            sequence_re = sequence_index[0]
-            row_index = sequence_index[1]
-            gen = 'Step 1: The Bwt sequence \n' + self.controller.sequence
-            self.insert_in_text_box(gen)
-            next_button.configure(command=self.step_tw_bwt_dec)
+        results_bwt = self.controller.bwt_decryption()
+        bwt_matrix_re = results_bwt[0]
+        sequence_index = results_bwt[1]
+        sequence_re = sequence_index[0]
+        row_index = sequence_index[1]
+        gen = 'Step 1: The Bwt sequence \n' + self.controller.sequence
+        self.insert_in_text_box(gen)
+        next_button.configure(command=self.step_tw_bwt_dec)
     
-        except:
-            showerror('Error file!', 'Please enter the right file')
+        # except:
+        #     showerror('Error file!', 'Please enter the right file')
 
     def step_tw_bwt_dec(self) -> None:
         """Helper method to proceed the Burrows Wheeler step by step encryption
