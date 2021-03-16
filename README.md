@@ -61,7 +61,16 @@
         <li><a href="#Installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li>
+      <a href="#usage">Usage</a>
+      <ul>
+        <li><a href="#compression">Compression process</a></li>
+        <li><a href="#decompression">Decompression process</a></li>
+        <li><a href="#bwt">Burrows Wheeler encryption</a></li>
+        <li><a href="#bwt_">Burrows Wheeler decryption</a></li>
+        <li><a href="#full">Full compression and decompression</a></li>
+      </ul>
+    </li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -132,7 +141,7 @@ To get a local copy up and running follow these simple steps
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-### 1. Compression process
+### 1. <span id="compression">Compression process</span>
 
 * If you want to proceed the compression of a file you can enter the sequence manually in the text box then press the compression button. Or if you have a genome file **Note:Enter only fasta or txt files** you can press button directly to proceed the compression step by step.
 * Once you click the button a toplevel window appears **ET VOILA!**
@@ -156,11 +165,11 @@ To get a local copy up and running follow these simple steps
 
 **NOTICE:** The compression process will save two files the **compressed file** + **json associated file** which will be used for the decompression process.
 
-## 2. Decompression process
+## 2. <span id="decompression">Decompression process</span>
 * For the decompression **WE CAN'T ENTER THE SEQUENCE MANUALLY** because we need the json associated file.
 * Press decompress and choose the compressed sequence file and the json associated to this file. **NOTICE: The compressed file and the json file have the same name.**
 
-## 3. Burrows Wheeler encryption
+## 3. <span id="bwt">Burrows Wheeler encryption</span>
 * The BWT button performs the Burrows Wheeler Tranformation.
 * Enter the sequence manually or with a file.
 * You can choose if you want to proceed the Transform step by step or not.
@@ -172,14 +181,14 @@ To get a local copy up and running follow these simple steps
 <img src="photos/scshot8.png">
 <br><br>
 
-## 4. Burrows Wheeler decrytion
+## 4. <span id="bwt_">Burrows Wheeler decrytion<span>
 * Choose BWT decryption to perform this algorithm if you want to decrypt (or retransform the original sequence from BWT).
 * The original sequence is presented in the row which ends by '$' in the Burrows Wheeler reconstruction matrix.
 <br><br>
 <img src="photos/scshot9.png">
 <br><br>
 
-## 5. Full compression and decompression
+## 5. <span id="full">Full compression and decompression</span>
 * This will allow us to proceed all the compression and decompression process starting from the ***Burrows Wheeler Transform to the Huffman coding***.
 
 
