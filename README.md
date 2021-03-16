@@ -5,8 +5,6 @@
 *** or simply open an issue with the tag "enhancement".
 *** Thanks again! Now go create something AMAZING! :D
 -->
-![Python][python-shield]
-![tkinter][tkinter-shield]
 
 
 <!-- PROJECT SHIELDS -->
@@ -17,7 +15,8 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-
+![Python][python-shield]
+![tkinter][tkinter-shield]
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
@@ -58,16 +57,14 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#clone">Clone the repo</a></li>
+        <li><a href="#Installation">Installation</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgements">Acknowledgements</a></li>
   </ol>
 </details>
 
@@ -104,7 +101,7 @@ Of course, we can enter genomic sequence manually or with a file (*fasta*, *txt*
 
 To get a local copy up and running follow these simple steps
 
-### 1. Clone the repo  
+### 1. <span id="clone">Clone the repo</span>  
 * Clone the repository locally
 
   ```sh
@@ -113,7 +110,7 @@ To get a local copy up and running follow these simple steps
   cd -BWT-Huffman-coding/
   ```
 
-### 2.Installation
+### 2. <span id="Installation">Installation</span>
 
 * Install all the dependencies from the *requirements.txt*
    ```sh
@@ -139,9 +136,11 @@ To get a local copy up and running follow these simple steps
 
 * If you want to proceed the compression of a file you can enter the sequence manually in the text box then press the compression button. Or if you have a genome file **Note:Enter only fasta or txt files** you can press button directly to proceed the compression step by step.
 * Once you click the button a toplevel window appears **ET VOILA!**
+
+**NOTICE:** The Huffman binary tree is presented in the Newick format. Check the Nwick format <a href="https://fr.wikipedia.org/wiki/Newick">here</a>.
 <br><br>
 <img src='photos/scshot2.png'/>
-<br><br>
+<br><br> 
 
 * Next button to complete the process
 
@@ -155,18 +154,34 @@ To get a local copy up and running follow these simple steps
 <img src='photos/scshot6.png'/>
 <br><br>
 
-**NOTICE: The compression process will save two files the compressed file + json associated file which will be used for the decompression process**
+**NOTICE:** The compression process will save two files the **compressed file** + **json associated file** which will be used for the decompression process.
 
 ## 2. Decompression process
 * For the decompression **WE CAN'T ENTER THE SEQUENCE MANUALLY** because we need the json associated file.
-* Press decompress and choose the compressed sequence file and the json associated to this file. **NOTICE: The compressed file and the json file have the same name**
+* Press decompress and choose the compressed sequence file and the json associated to this file. **NOTICE: The compressed file and the json file have the same name.**
 
+## 3. Burrows Wheeler encryption
+* The BWT button performs the Burrows Wheeler Tranformation.
+* Enter the sequence manually or with a file.
+* You can choose if you want to proceed the Transform step by step or not.
+<br><br>
+<img src="photos/scshot7.png">
+<br><br>
+* The ***Burrows Wheeler transform*** is presented in the next column of the Burrows Wheeler construction matrix.
+<br><br>
+<img src="photos/scshot8.png">
+<br><br>
 
+## 4. Burrows Wheeler decrytion
+* Choose BWT decryption to perform this algorithm if you want to decrypt (or retransform the original sequence from BWT).
+* The original sequence is presented in the row which ends by '$' in the Burrows Wheeler reconstruction matrix.
+<br><br>
+<img src="photos/scshot9.png">
+<br><br>
 
-<!-- ROADMAP -->
-## Roadmap
+## 5. Full compression and decompression
+* This will allow us to proceed all the compression and decompression process starting from the ***Burrows Wheeler Transform to the Huffman coding***.
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
 
 
 
@@ -193,25 +208,11 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
-
+Project Link: [https://github.com/LouaiKB/-BWT-Huffman-coding](https://github.com/your_username/repo_name)
 
 
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Img Shields](https://shields.io)
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Pages](https://pages.github.com)
-* [Animate.css](https://daneden.github.io/animate.css)
-* [Loaders.css](https://connoratherton.com/loaders)
-* [Slick Carousel](https://kenwheeler.github.io/slick)
-* [Smooth Scroll](https://github.com/cferdinandi/smooth-scroll)
-* [Sticky Kit](http://leafo.net/sticky-kit)
-* [JVectorMap](http://jvectormap.com)
-* [Font Awesome](https://fontawesome.com)
+
 
 
 
