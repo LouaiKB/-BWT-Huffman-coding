@@ -81,6 +81,9 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+**NOTICE: For better interface aesthetic use Windows instead of Linux.**
+<br>
+<br>
 <img src="photos/scshot1.png"/>
 <br>
 
