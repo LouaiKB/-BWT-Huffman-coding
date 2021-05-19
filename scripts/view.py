@@ -533,7 +533,6 @@ class View(tk.Tk):
         content = self.get_content_of_text_box()
 
         if full_dec:
-            print('auihiahe')
             self.controller.sequence = decompressed_sequence
 
         else:
