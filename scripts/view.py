@@ -531,7 +531,7 @@ class View(tk.Tk):
         global row_index
         
         content = self.get_content_of_text_box()
-        # try:
+
         if full_dec:
             print('auihiahe')
             self.controller.sequence = decompressed_sequence
@@ -555,9 +555,6 @@ class View(tk.Tk):
         gen = 'Step 1: The Bwt sequence \n' + self.controller.sequence
         self.insert_in_text_box(gen)
         next_button.configure(command=self.step_tw_bwt_dec)
-    
-        # except:
-        #     showerror('Error file!', 'Please enter the right file')
 
     def step_tw_bwt_dec(self) -> None:
         """Helper method to proceed the Burrows Wheeler step by step encryption
