@@ -126,7 +126,7 @@ To get a local copy up and running follow these simple steps
 
 * Install all the dependencies from the *requirements.txt*
    ```sh
-   pip install -r rquirements.txt
+   pip install -r requirements.txt
    ```
 * If problems occur with the dependecies installation try:
    ```sh
