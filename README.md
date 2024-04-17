@@ -26,7 +26,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="photos/logo.png" alt="Logo" >
+    <img src="photos/logo_final.png" alt="Logo" >
   </a>
 
   <h3 align="center" style="font-weight:bold">Burrows Wheeler Transform and Huffman coding</h3>
